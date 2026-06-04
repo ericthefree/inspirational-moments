@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Daily Inspiration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Cinzel:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --morning-bg-a: #fdf3d7;
+      --morning-bg-b: #fce4b0;
+      --morning-bg-c: #f8c878;
+      --morning-glow: rgba(255, 190, 60, 0.45);
+      --morning-accent: #d4890a;
+      --morning-text: #3d2600;
+      --morning-sub: #a06010;
+      --morning-card: rgba(255,255,255,0.70);
+      --morning-border: rgba(255,200,80,0.38);
+
+      --evening-bg-a: #1a1030;
+      --evening-bg-b: #2a1a4a;
+      --evening-bg-c: #3d1f5a;
+      --evening-glow: rgba(120, 60, 200, 0.35);
+      --evening-accent: #c084fc;
+      --evening-text: #f0e8ff;
+      --evening-sub: #a78bca;
+      --evening-card: rgba(30,18,55,0.72);
+      --evening-border: rgba(160,100,255,0.28);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      padding: 24px;
+      padding-top: max(24px, env(safe-area-inset-top));
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+      transition: background 1.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body.morning {
+      background: linear-gradient(145deg, var(--morning-bg-a) 0%, var(--morning-bg-b) 45%, var(--morning-bg-c) 100%);
+    }
+    body.evening {
+      background: linear-gradient(145deg, var(--evening-bg-a) 0%, var(--evening-bg-b) 50%, var(--evening-bg-c) 100%);
+    }
+
+    /* ── Orbs ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 {
+      width: 480px; height: 480px;
+      top: -160px; right: -160px;
+    }
+    .orb-2 {
+      width: 300px; height: 300px;
+      bottom: -100px; left: -80px;
+    }
+    body.morning .orb-1 { background: radial-gradient(circle, rgba(255,200,70,0.38) 0%, transparent 70%); }
+    body.morning .orb-2 { background: radial-gradient(circle, rgba(255,220,120,0.22) 0%, transparent 70%); }
+    body.evening .orb-1 { background: radial-gradient(circle, rgba(140,60,230,0.30) 0%, transparent 70%); }
+    body.evening .orb-2 { background: radial-gradient(circle, rgba(80,30,160,0.22) 0%, transparent 70%); }
+
+    /* ── Stars (evening only) ── */
+    .stars {
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+    body.evening .stars { opacity: 1; }
+    .star {
+      position: absolute;
+      width: 2px; height: 2px;
+      border-radius: 50%;
+      background: #fff;
+      animation: twinkle var(--dur, 3s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.4); }
+    }
+
+    /* ── Card ── */
+    .card {
+      position: relative;
+      z-index: 1;
+      max-width: 540px;
+      width: 100%;
+      border-radius: 28px;
+      padding: 48px 44px 40px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1.5px solid;
+      transition: background 1.2s ease, border-color 1.2s ease, box-shadow 1.2s ease;
+      animation: cardIn 0.8s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    body.morning .card {
+      background: var(--morning-card);
+      border-color: var(--morning-border);
+      box-shadow: 0 8px 52px rgba(200,140,20,0.18), 0 2px 12px rgba(180,110,0,0.10);
+    }
+    body.evening .card {
+      background: var(--evening-card);
+      border-color: var(--evening-border);
+      box-shadow: 0 8px 52px rgba(100,40,180,0.28), 0 2px 16px rgba(60,0,120,0.20);
+    }
+
+    /* ── Top rule ── */
+    .top-rule {
+      height: 2.5px;
+      border-radius: 2px;
+      margin-bottom: 32px;
+      transition: background 1.2s ease;
+    }
+    body.morning .top-rule { background: linear-gradient(90deg, #f5a623, #f8d26a, #f5a623); }
+    body.evening .top-rule { background: linear-gradient(90deg, #7c3aed, #c084fc, #7c3aed); }
+
+    /* ── Label ── */
+    .label {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      transition: color 1.2s ease;
+    }
+    body.morning .label { color: var(--morning-sub); }
+    body.evening .label { color: var(--evening-sub); }
+
+    /* ── Icon ── */
+    .icon {
+      font-size: 38px;
+      margin-bottom: 28px;
+      display: inline-block;
+      filter: drop-shadow(0 2px 8px rgba(200,140,0,0.35));
+      animation: spinSlow 18s linear infinite;
+    }
+    body.evening .icon {
+      animation: none;
+      filter: drop-shadow(0 0 12px rgba(180,120,255,0.5));
+    }
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* ── Quote wrapper (fade in/out on change) ── */
+    .quote-wrap {
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+    .quote-wrap.hidden {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    /* ── Quote text ── */
+    blockquote {
+      font-size: clamp(19px, 4.5vw, 26px);
+      line-height: 1.65;
+      font-style: italic;
+      font-weight: 400;
+      margin: 0 0 20px 0;
+      position: relative;
+      transition: color 1.2s ease;
+    }
+    body.morning blockquote { color: var(--morning-text); }
+    body.evening blockquote { color: var(--evening-text); }
+
+    .q-mark {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 72px;
+      line-height: 0;
+      vertical-align: -32px;
+      opacity: 0.45;
+      transition: color 1.2s ease;
+    }
+    .q-open { margin-right: 2px; }
+    .q-close { margin-left: 2px; }
+    body.morning .q-mark { color: #f5a623; }
+    body.evening .q-mark { color: #c084fc; }
+
+    .author {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-align: right;
+      padding-right: 6px;
+      transition: color 1.2s ease;
+    }
+    body.morning .author { color: var(--morning-sub); }
+    body.evening .author { color: var(--evening-sub); }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      margin: 30px 0 26px;
+      transition: background 1.2s ease;
+    }
+    body.morning .divider { background: linear-gradient(90deg, transparent, rgba(245,166,35,0.4), transparent); }
+    body.evening .divider { background: linear-gradient(90deg, transparent, rgba(192,132,252,0.3), transparent); }
+
+    /* ── Button ── */
+    .btn {
+      display: block;
+      margin: 0 auto;
+      border: none;
+      border-radius: 50px;
+      padding: 13px 34px;
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s, background 1.2s ease, color 1.2s ease;
+    }
+    body.morning .btn {
+      background: linear-gradient(135deg, #f5a623, #f8c354);
+      color: #4a2e00;
+      box-shadow: 0 4px 20px rgba(240,160,0,0.28);
+    }
+    body.evening .btn {
+      background: linear-gradient(135deg, #7c3aed, #c084fc);
+      color: #f5f0ff;
+      box-shadow: 0 4px 20px rgba(140,60,240,0.35);
+    }
+    .btn:hover { transform: scale(1.04); }
+    body.morning .btn:hover { box-shadow: 0 6px 26px rgba(240,160,0,0.40); }
+    body.evening .btn:hover { box-shadow: 0 6px 26px rgba(140,60,240,0.50); }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+
+    @media (max-width: 480px) {
+      .card { padding: 36px 28px 32px; }
+    }
+  </style>
+</head>
+<body class="morning">
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="stars" id="stars"></div>
+
+  <div class="card">
+    <div class="top-rule"></div>
+    <div class="label" id="label">Good Morning · <span id="dateStr"></span></div>
+    <div class="icon" id="icon">☀️</div>
+
+    <div class="quote-wrap" id="quoteWrap">
+      <blockquote id="quoteText">
+        <span class="q-mark q-open">"</span><span id="quoteBody"></span><span class="q-mark q-close">"</span>
+      </blockquote>
+      <div class="author" id="author"></div>
+    </div>
+
+    <div class="divider"></div>
+    <button class="btn" id="btn" onclick="newQuote()">✦ New Inspiration</button>
+  </div>
+
+  <script>
+    const quotes = [
+      { text: "The morning is wiser than the evening.", author: "Russian Proverb" },
+      { text: "Every morning we are born again. What we do today matters most.", author: "Buddha" },
+      { text: "You don't have to be great to start, but you have to start to be great.", author: "Zig Ziglar" },
+      { text: "Each morning is a new beginning — a fresh start with infinite possibilities.", author: "Anonymous" },
+      { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+      { text: "Rise up, start fresh, see the bright opportunity in each new day.", author: "Anonymous" },
+      { text: "What you do today can improve all your tomorrows.", author: "Ralph Marston" },
+      { text: "Believe you can, and you're halfway there.", author: "Theodore Roosevelt" },
+      { text: "Today is another chance to get it right.", author: "Anonymous" },
+      { text: "The sun is a daily reminder that we, too, can rise again from the darkness.", author: "S. Ajna" },
+      { text: "Do something today that your future self will thank you for.", author: "Sean Patrick Flanery" },
+      { text: "You are capable of amazing things.", author: "Anonymous" },
+      { text: "Small steps every day lead to big changes over time.", author: "Anonymous" },
+      { text: "Your potential is endless. Go do what you were created to do.", author: "Anonymous" },
+      { text: "Joy is not in things; it is in you.", author: "Richard Wagner" },
+      { text: "Every day is a second chance.", author: "Anonymous" },
+      { text: "Make today so awesome that yesterday gets jealous.", author: "Anonymous" },
+      { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese Proverb" },
+      { text: "Start where you are. Use what you have. Do what you can.", author: "Arthur Ashe" },
+      { text: "Energy and persistence conquer all things.", author: "Benjamin Franklin" },
+      { text: "Good things are coming down the road. Just don't stop walking.", author: "Robert Warren Painter Jr." },
+      { text: "You are braver than you believe, stronger than you seem.", author: "A.A. Milne" },
+      { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+      { text: "Life is 10% what happens to you and 90% how you react to it.", author: "Charles R. Swindoll" },
+      { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein" },
+      { text: "Act as if what you do makes a difference. It does.", author: "William James" },
+      { text: "Nothing is impossible — the word itself says 'I'm possible.'", author: "Audrey Hepburn" },
+      { text: "Keep your face always toward the sunshine, and shadows will fall behind you.", author: "Walt Whitman" },
+      { text: "With the new day comes new strength and new thoughts.", author: "Eleanor Roosevelt" },
+      { text: "The only limit to our realization of tomorrow is our doubts of today.", author: "Franklin D. Roosevelt" },
+      { text: "The night is always darkest just before the dawn.", author: "Thomas Fuller" },
+      { text: "Even the darkest night will end and the sun will rise.", author: "Victor Hugo" },
+      { text: "Rest is not idleness — it is the seed of tomorrow's energy.", author: "Anonymous" },
+      { text: "Let the night carry away what no longer serves you. Tomorrow is yours.", author: "Anonymous" },
+      { text: "Peace is always beautiful.", author: "Walt Whitman" },
+      { text: "Stars can't shine without darkness.", author: "Anonymous" },
+      { text: "The quieter you become, the more you are able to hear.", author: "Rumi" },
+      { text: "Each night, when I go to sleep, I die. Each morning, when I wake up, I am reborn.", author: "Mahatma Gandhi" },
+    ];
+
+    let currentIndex = -1;
+
+    function getDailyIndex() {
+      const today = new Date();
+      const day = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+      return day % quotes.length;
+    }
+
+    function getTheme() {
+      const h = new Date().getHours();
+      return (h >= 17 || h < 5) ? 'evening' : 'morning';
+    }
+
+    function getGreeting() {
+      const h = new Date().getHours();
+      if (h >= 5 && h < 12)  return 'Good Morning';
+      if (h >= 12 && h < 17) return 'Good Afternoon';
+      if (h >= 17 && h < 21) return 'Good Evening';
+      return 'Good Night';
+    }
+
+    function getDateStr() {
+      return new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    }
+
+    function applyTheme(theme) {
+      document.body.className = theme;
+      document.getElementById('icon').textContent = theme === 'evening' ? '🌙' : '☀️';
+    }
+
+    function setQuote(q) {
+      document.getElementById('quoteBody').textContent = q.text;
+      document.getElementById('author').textContent = '— ' + q.author;
+    }
+
+    function newQuote() {
+      const btn = document.getElementById('btn');
+      const wrap = document.getElementById('quoteWrap');
+      btn.disabled = true;
+      wrap.classList.add('hidden');
+      setTimeout(() => {
+        let idx;
+        do { idx = Math.floor(Math.random() * quotes.length); } while (idx === currentIndex);
+        currentIndex = idx;
+        setQuote(quotes[idx]);
+        wrap.classList.remove('hidden');
+        btn.disabled = false;
+      }, 450);
+    }
+
+    function buildStars() {
+      const container = document.getElementById('stars');
+      for (let i = 0; i < 80; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        s.style.left = Math.random() * 100 + '%';
+        s.style.top  = Math.random() * 100 + '%';
+        s.style.setProperty('--dur', (2 + Math.random() * 4).toFixed(1) + 's');
+        s.style.setProperty('--delay', (Math.random() * 4).toFixed(1) + 's');
+        container.appendChild(s);
+      }
+    }
+
+    // Init
+    buildStars();
+    const theme = getTheme();
+    applyTheme(theme);
+    document.getElementById('label').innerHTML =
+      getGreeting() + ' &middot; <span id="dateStr">' + getDateStr() + '</span>';
+
+    currentIndex = getDailyIndex();
+    setQuote(quotes[currentIndex]);
+  </script>
+</body>
+</html>
